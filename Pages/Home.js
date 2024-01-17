@@ -12,13 +12,13 @@ const db = SQLite.openDatabase('photos.db');
 
 export default function Home() {
     const [hasPermission, setHasPermision] = useState(null);
-    const [locationPermission, setLocationPermision] = useState(null)
-    const [type, setType] = useState(Camera.Constants.Type.back)
+    const [type, setType] = useState(Camera.Constants.Type.back);
     const [camera, setCamera] = useState(null);
     const [image, setImage] = useState(null);
-    const [pictures, setPictures] = useState([])
+    const [pictures, setPictures] = useState([]);
+    const navigation = useNavigation();
 
-    //So that the user don't have to always give the app permision whe opening the app
+    
 
     useEffect(() => {
 
@@ -46,9 +46,9 @@ export default function Home() {
                   'CREATE TABLE IF NOT EXISTS photos(id INTEGER PRIMARY KEY AUTOINCREMENT, uri TEXT, city TEXT, latitude REAL, longitude REAL)'
                 );
               }, (err) => {
-                console.log({ errInCreate: err });
+                console.log({ err });
               }, (result) => {
-                console.log({ resultInCreate: result });
+                console.log({ result });
               });
       
               db.transaction((tx) => {
@@ -64,7 +64,7 @@ export default function Home() {
               setImage(photo.uri);
             }
           } catch (error) {
-            console.error('Error taking picture:', error);
+            console.error('Error occured while taking a picture:', error);
           }
         }
       };
@@ -89,21 +89,19 @@ export default function Home() {
     }
 
 
-    const navigation = useNavigation()
+    
 
     return (
         <SafeAreaView style={styles.container}>
             <View style={styles.topContainer}>
                 <TouchableOpacity>
 
-                    <MaterialCommunityIcons name='flash-off' size={30} color={"#fff"} />
+                    <MaterialCommunityIcons name='flash-off' size={30} color={"black"} />
 
                 </TouchableOpacity>
+                
                 <TouchableOpacity>
-                    <MaterialCommunityIcons name='hdr-off' size={30} color={"#fff"} />
-                </TouchableOpacity>
-                <TouchableOpacity>
-                    <MaterialCommunityIcons name='format-align-justify' size={30} color={"white"} />
+                    <MaterialCommunityIcons name='format-align-justify' size={50} color={"black"} />
                 </TouchableOpacity>
             </View>
             <View style={styles.cameraContainer}>
@@ -114,14 +112,13 @@ export default function Home() {
                     ratio={'1:1'}
                 />
             </View>
-            {/* {image && <Image source={{ uri: image }} style={{ width: 300, height: 300 }} />} */}
             {
                 pictures.length > 0 &&
                 <View style={{ zIndex: 1000, backgroundColor: 'red', width: Dimensions.get('window').width, height: 500 }}>
                     {pictures.map((pic) => (
                         <>
-                            <Text>{pic.location} </Text>
-                            <Image source={{ uri: pic.uri }} style={{ width: 300, height: 300 }} />
+                            <Text >{pic.location} </Text>
+                            <Image source={{ uri: pic.uri }} style={{ width: 200, height: 200 }} />
                         </>
 
                     ))}
@@ -132,13 +129,13 @@ export default function Home() {
                 <TouchableOpacity
                     onPress={() => navigation.navigate('Gallery')}
                 >
-                    <MaterialCommunityIcons name='image' size={35} color={"#fff"} />
+                    <MaterialCommunityIcons name='image' size={35} color={"lime"} />
 
                 </TouchableOpacity>
                 <TouchableOpacity
                     onPress={() => takePicture()}
                 >
-                    <MaterialCommunityIcons name='camera' size={35} color={"#fff"} />
+                    <MaterialCommunityIcons name='camera' size={35} color={"lime"} />
                 </TouchableOpacity>
                 <TouchableOpacity
                     onPress={() => {
@@ -150,7 +147,7 @@ export default function Home() {
                     }}
 
                 >
-                    <MaterialCommunityIcons name='camera-retake-outline' size={35} color={"white"} />
+                    <MaterialCommunityIcons name='camera-retake-outline' size={35} color={"lime"} />
                 </TouchableOpacity>
             </View>
         </SafeAreaView>
@@ -202,6 +199,7 @@ const styles = StyleSheet.create({
         width: "100%",
         flexDirection: 'row',
         justifyContent: 'space-between',
-        padding: 10
+        padding: 10,
+        backgroundColor:"lime",
     }
 })

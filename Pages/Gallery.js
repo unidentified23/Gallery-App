@@ -9,10 +9,6 @@ export default function Gallery() {
 
     const [pictures, setPictures] = useState([])
     const db = SQLite.openDatabase('photos.db');
-
-    useEffect(() => {
-        getImages()
-    }, [])
     const getImages = () => {
         db.transaction(tx => {
             tx.executeSql(
@@ -24,6 +20,7 @@ export default function Gallery() {
                     console.log('Saved images:', images);
                 },
                 (_, error) => {
+                    alert('Error retrieving images:',error);
                     console.log('Error retrieving images:', error);
                 }
             );
@@ -34,15 +31,21 @@ export default function Gallery() {
         });
     };
 
-    function deleteFun(itemId) {
-        console.log(itemId);
-        db.transaction((tx) => {
-            tx.executeSql('DELETE FROM photos WHERE id = ?', [itemId], (tx, results) => {
+
+    useEffect(() => {
+        getImages()
+    }, [])
+
+    function deleteFun(imageId) {
+        console.log(imageId);
+        db.transaction((img) => {
+            img.executeSql('DELETE FROM photos WHERE id = ?', [imageId], (img, results) => {
                 if (results.rowsAffected > 0) {
-                    console.log('Item deleted successfully');
-                   navigation.navigate('Home')
+                    alert('Image deleted');
+                    getImages();
+
                 } else {
-                    console.log('Item not found');
+                    console.log('image not found');
                 }
             })
         })
@@ -54,24 +57,24 @@ export default function Gallery() {
                 <TouchableOpacity
                     onPress={() => navigation.navigate("Home")}
                 >
-                    <MaterialCommunityIcons name='keyboard-backspace' size={30} color={"#fff"} />
+                    <MaterialCommunityIcons name='keyboard-backspace' size={30} color={"lime"} />
 
                 </TouchableOpacity>
                 <Text style={styles.heading}>Images</Text>
                 <TouchableOpacity>
-                    <MaterialCommunityIcons name='dots-vertical' size={30} color={"white"} />
+                    <MaterialCommunityIcons name='dots-vertical' size={30} color={"lime"} />
                 </TouchableOpacity>
             </View>
             {
                 pictures.length > 0 &&
                 <ScrollView style={styles.gallery}>
-                    {pictures.map((pic, index) => (
+                    {pictures.map((img, index) => (
                         <View style={styles.scrollCon} key={index}>
-                            <ImageBackground source={{ uri: pic.uri }} style={{ width: 300, height: 300, marginBottom: 30 }} >
-                                <TouchableOpacity onPress={() => deleteFun(pic.id)}>
-                                    <MaterialCommunityIcons name='delete' size={30} color={"white"} style={styles.delete} />
+                            <ImageBackground source={{ uri: img.uri }} style={{ width: 395, height: 400, marginBottom: 30 }} >
+                                <TouchableOpacity onPress={() => deleteFun(img.id)}>
+                                    <MaterialCommunityIcons name='delete' size={40} color={"red"} style={styles.delete} />
                                 </TouchableOpacity>
-                                <Text style={styles.city}>{pic.city}</Text>
+                                <Text style={styles.city}>{img.city}</Text>
                             </ImageBackground>
 
                         </View>
@@ -87,20 +90,14 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         backgroundColor: '#000',
-        // alignItems: 'center',
-        // justifyContent: 'center',
         width: "100%",
 
     },
 
-    gallery: {
-        // flex: 1,
-        // width: "100%"
-    },
-
     scrollCon: {
         justifyContent: "center",
-        alignItems: "center"
+        alignItems: "center",
+        
     },
 
     topContainer: {
@@ -124,7 +121,9 @@ const styles = StyleSheet.create({
     city:{
         marginTop: "auto",
         color: "#fff",
-        fontSize: 25
+        fontSize: 20,
+        left:"6%",
+        bottom:"3%",
         
     }
 })
